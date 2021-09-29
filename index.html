@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8" />
+  <head>
+    <title>simple example to extract a sprite</title>
+  </head>
+  <body style="text-align: center;">
+    <p> <a href="sprite_decompression.zip">download this code</a></p>
+    <p><a href="https://github.com/pixeluniverselab/sprite_decompression">github</a></p>
+    <p>Get tokenURI from <a target="_blank"
+        href="https://etherscan.io/address/0xb93ca660ac25215256636736aa2ee88a9a0c9f0d#readContract">https://etherscan.io/</a>
+      23. tokenURI </p>
+    <p>please input tokenURI:</p>
+    <textarea id="my_textarea"
+      style="width: 800px;height: 200px;">eyJuYW1lIjogIlNwcml0ZSAjMSIsImRlc2NyaXB0aW9uIjogIlBpeGVsIHNwcml0ZSBpcyBhIG1ldGF2ZXJzZSBnYW1lLiBBbGwgaW5mb3JtYXRpb24gb2YgdGhlIHNwcml0ZSwgaW5jbHVkaW5nIGltYWdlIGRhdGEsIGlzIGNvbXBsZXRlbHkgc3RvcmVkIG9uIHRoZSBjaGFpbi4gVGhlIHBpY3R1cmUgaXMgc3RvcmVkIG9uIHRoZSBjaGFpbiB1c2luZyBhIGNvbXByZXNzaW9uIGFsZ29yaXRobSIsICJhdHRyaWJ1dGUiOiB7InNwZWVkIjoxMiwiY2FwYWNpdHkiOjc3LCJzcGFjZSI6MTAsImNvbG9yXzEiOjIxNSwiY29sb3JfMiI6NSwiY29sb3JfMyI6MzAsImNvbG9yXzQiOjE4MH0sICJib2R5IjogeyJ0cnVua0luZGV4IjowLCJoZWFkSW5kZXgiOjAsImV5ZUluZGV4IjowLCJtb3V0aEluZGV4IjowLCJ0YWlsSW5kZXgiOjAsImNvbG9yQ29udGFpbmVySW5kZXgiOjAsInNraW5Db2xvckluZGV4IjowfSwgImltYWdlIjogImRhdGE6aW1hZ2UvY29tcHJlc3NlZF9wbmc7QmFzZTY0LDF3VWV0TE9JQUFBQUs0SXIyTmxLS1FNQ0pGVldCcFFxcXNHU2hWVllTbENxcXd4dUZWVmdWVlZnVlZWZ1ZWVmpDVUFBVkFBQUFBQXNnaXZZMlZ4cm93RWdWVmdZUUtxd1dnRlZTZ1JSS0JGRW9jRWlxTkVNa1ZWb25NalNoQTBBc0FCcEVBQUFBQUFIZ0N0am51RVlBQUFBQUJpQ0s5alpTU2h5QXdBQUFaUXFxc01XSUtxeEtCUEFxckFBQUFBSWdDdGkzc0NCemdBQUFBQUtnU3ZadGZHUkFEWm9BQUFBQUJhRUs5cmIzTjBkVGJLRUlCTGdBQWtCSUJzQ1FBQUEifQ==</textarea>
+    <p><button id="extract" type="button">extract</button></p>
+    <div>
+      <h1>original size</h1>
+      <canvas id="original_size" width="30" height="30"></canvas>
+      <h1>10x</h1>
+      <canvas id="10x_size" width="300" height="300"></canvas>
+    </div>
+    <table style="width: 400px;margin: 0 auto;">
+      <tr>
+        <th>tokenID:</th>
+        <td id="tokenId"></td>
+      </tr>
+      <tr>
+        <th>capacity:</th>
+        <td id="capacity"></td>
+      </tr>
+      <tr>
+        <th>speed:</th>
+        <td id="speed"></td>
+      </tr>
+      <tr>
+        <th>space:</th>
+        <td id="space"></td>
+      </tr>
+      <tr>
+        <th>color_1:</th>
+        <td id="color_1"></td>
+      </tr>
+      <tr>
+        <th>color_2:</th>
+        <td id="color_2"></td>
+      </tr>
+      <tr>
+        <th>color_3:</th>
+        <td id="color_3"></td>
+      </tr>
+      <tr>
+        <th>color_4:</th>
+        <td id="color_4"></td>
+      </tr>
+    </table>
+  </body>
+  <script type="text/javascript" src="sprite.js"></script>
+  <script type="text/javascript">
+    var tokenURI = spriteInfo = compressed_png_base64str = compressed_png = sprite = null;
+    window.onload = function() {
+      function bese64decode(str) {
+        return window.atob(str)
+      }
+
+      function base64toHEX(base64) {
+        var raw = bese64decode(base64);
+        var HEX = '';
+        for (i = 0; i < raw.length; i++) {
+          var _hex = raw.charCodeAt(i).toString(16)
+          HEX += (_hex.length == 2 ? _hex : '0' + _hex);
+        }
+        return HEX.toUpperCase();
+      }
+
+      function drawOriginalSize() {
+        let sprite_canvas = document.getElementById('original_size');
+        sprite_canvas.width = "30"
+        let context = sprite_canvas.getContext("2d");
+        let _imageData = sprite.getUnCompressCode();
+        for (let point of _imageData) {
+          let style = `rgba(${point.R},${point.G},${point.B},${point.A})`;
+          context.fillStyle = style;
+          context.fillRect(point.X, point.Y, 1, 1);
+        }
+      }
+
+      function draw10xSize() {
+        let sprite_canvas = document.getElementById('10x_size');
+        sprite_canvas.width = "300"
+        let context = sprite_canvas.getContext("2d");
+        let _imageData = sprite.getUnCompressCode();
+        context.scale(10, 10)
+        for (let point of _imageData) {
+          let style = `rgba(${point.R},${point.G},${point.B},${point.A})`;
+          context.fillStyle = style;
+          context.fillRect(point.X, point.Y, 1, 1);
+        }
+      }
+
+
+      document.getElementById("extract").onclick = function() {
+        tokenURI = document.getElementById("my_textarea").value.trim().replace('data:application/json;base64,', '');
+        spriteInfo = JSON.parse(bese64decode(tokenURI));
+        console.log(spriteInfo);
+        compressed_png_base64str = spriteInfo.image.replace('data:image/compressed_png;Base64,', '');
+        compressed_png = base64toHEX(compressed_png_base64str);
+        sprite = new Sprite(compressed_png);
+        drawOriginalSize();
+        draw10xSize();
+        document.getElementById("tokenId").innerHTML = spriteInfo.name;
+        document.getElementById("capacity").innerHTML = spriteInfo.attribute.capacity;
+        document.getElementById("space").innerHTML = spriteInfo.attribute.space;
+        document.getElementById("speed").innerHTML = spriteInfo.attribute.speed;
+        document.getElementById("color_1").innerHTML = sprite.colorToHex(sprite.getSafeColorByIndex(spriteInfo
+          .attribute.color_1));
+        document.getElementById("color_2").innerHTML = sprite.colorToHex(sprite.getSafeColorByIndex(spriteInfo
+          .attribute.color_2));
+        document.getElementById("color_3").innerHTML = sprite.colorToHex(sprite.getSafeColorByIndex(spriteInfo
+          .attribute.color_3));
+        document.getElementById("color_4").innerHTML = sprite.colorToHex(sprite.getSafeColorByIndex(spriteInfo
+          .attribute.color_4));
+      }
+    }
+  </script>
+
+</html>
